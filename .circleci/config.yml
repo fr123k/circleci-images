@@ -1,0 +1,64 @@
+version: 2.1
+commands:
+  build-all-images:
+    steps:
+      - run:
+          name: build all images
+          command: |
+            # replace image name with a name the matches current build
+            export BUILD_DATE=$(date +"%Y%m%d")
+            export GIT_COMMIT=${CIRCLE_SHA1:0:7}
+            make build-all
+
+  push-images:
+    parameters:
+      image_names:
+        type: string
+        default: ""
+      image_tag:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: push image to dockerhub
+          command: |
+            BUILD_DATE=$(date +"%Y%m%d")
+            IMAGE_TAG=${BUILD_DATE}_<< parameters.image_tag >>
+
+            echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USER} --password-stdin
+            for image in <<parameters.image_names>>; do
+
+              docker tag $image:${IMAGE_TAG} $image:${IMAGE_TAG}
+              docker tag $image:${IMAGE_TAG} $image:latest
+
+              echo "docker push $image:latest"
+              docker push $image:latest
+              echo "docker push $image:${IMAGE_TAG}"
+              docker push $image:${IMAGE_TAG}
+            done
+jobs:
+  build:
+    docker:
+      - image: cimg/base:2022.02
+    environment:
+      ENV_NAME: "tools"
+      BUILD_UTILS_LOCAL_FOLDER: "/home/circleci/build"
+    resource_class: small
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - build-all-images
+      - when:
+          condition:
+            and:
+              - equal: ["main", << pipeline.git.branch >>]
+          steps:
+            - push-images:
+                image_names: "fr123k/circleci-base fr123k/circleci-golang"
+                image_tag: ${CIRCLE_SHA1:0:7}
+
+workflows:
+  build-and-deploy:
+    jobs:
+      - build
