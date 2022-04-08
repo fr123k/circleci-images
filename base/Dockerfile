@@ -2,6 +2,7 @@ FROM cimg/base:2022.03
 
 ARG TERRAFORM_VERSION=1.0.2
 ENV GITHUB_COMMENT_VERSION=4.1.1
+ENV TERRAFORM_BACKEND_GIT=0.0.17
 
 RUN curl -s -o "/tmp/get-helm.sh" https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
     chmod +x /tmp/get-helm.sh && \
@@ -19,6 +20,10 @@ RUN curl -f -o /tmp/terraform.zip \
 RUN curl -sSL https://github.com/suzuki-shunsuke/github-comment/releases/download/v${GITHUB_COMMENT_VERSION}/github-comment_${GITHUB_COMMENT_VERSION}_linux_amd64.tar.gz | \
     sudo tar -xz -C /usr/local/bin github-comment
 
+RUN curl -sSL -o /tmp/terraform-backend-git https://github.com/plumber-cd/terraform-backend-git/releases/download/v${TERRAFORM_BACKEND_GIT}/terraform-backend-git-linux-amd64 && \
+    sudo mv /tmp/terraform-backend-git /usr/local/bin/ && \
+    sudo chmod +x  /usr/local/bin/terraform-backend-git 
+
 RUN sudo apt-get update && \
     sudo apt-get -y upgrade && \
     sudo apt-get install -y apt-utils
@@ -34,7 +39,8 @@ RUN aws --version && \
     helm version && \
     docker --version && \
     terraform version  && \
-    github-comment -v
+    github-comment -v && \
+    terraform-backend-git version
 
 USER circleci
 
