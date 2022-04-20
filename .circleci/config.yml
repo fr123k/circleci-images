@@ -39,7 +39,7 @@ commands:
 jobs:
   build:
     docker:
-      - image: cimg/base:2022.02
+      - image: cimg/base:2022.04
     environment:
       ENV_NAME: "tools"
       BUILD_UTILS_LOCAL_FOLDER: "/home/circleci/build"

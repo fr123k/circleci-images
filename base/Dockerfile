@@ -25,11 +25,13 @@ RUN curl -sSL -o /tmp/terraform-backend-git https://github.com/plumber-cd/terraf
     sudo chmod +x  /usr/local/bin/terraform-backend-git 
 
 RUN sudo apt-get update && \
-    sudo apt-get -y upgrade && \
+    # sudo apt-get -y upgrade && \
     sudo apt-get install -y apt-utils
 
+RUN uname --all
+
 RUN sudo apt-get update && \
-    sudo apt-get install -y python3 pip jq git docker-ce-cli openssl groff && \
+    sudo apt-get install -y python3 pip jq git docker-ce-cli openssl groff linux-headers-generic wireguard wireguard-tools && \
     sudo pip3 -q install --upgrade pip && \
     sudo pip3 -q install awscli boto3 && \
     sudo apt-get -y clean autoremove
@@ -40,7 +42,8 @@ RUN aws --version && \
     docker --version && \
     terraform version  && \
     github-comment -v && \
-    terraform-backend-git version
+    terraform-backend-git version && \
+    sudo modprobe wireguard
 
 USER circleci
 
