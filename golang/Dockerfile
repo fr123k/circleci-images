@@ -1,7 +1,7 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-ENV GO_VERSION=1.17.8
+ENV GO_VERSION=1.21.0
 
 # Install packages needed for CGO
 RUN sudo apt-get update && \
