@@ -1,8 +1,8 @@
-FROM cimg/base:2022.04
+FROM cimg/base:2023.09
 
-ARG TERRAFORM_VERSION=1.1.8
-ENV GITHUB_COMMENT_VERSION=4.1.1
-ENV TERRAFORM_BACKEND_GIT=0.0.17
+ARG TERRAFORM_VERSION=1.5.7
+ENV GITHUB_COMMENT_VERSION=6.0.1
+ENV TERRAFORM_BACKEND_GIT=0.1.5
 
 RUN curl -s -o "/tmp/get-helm.sh" https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 && \
     chmod +x /tmp/get-helm.sh && \
@@ -42,8 +42,9 @@ RUN aws --version && \
     docker --version && \
     terraform version  && \
     github-comment -v && \
-    terraform-backend-git version && \
-    sudo modprobe wireguard
+    terraform-backend-git version 
+    # && \
+    # sudo modprobe wireguard
 
 USER circleci
 
